@@ -4,49 +4,82 @@ const router = express.Router();
 const commonFile = require('./common')
 const myUnderscore = require('underscore')
 
-router.get('/test-me', function (req, res) {
-    res.send('This should be working!')
-});
+/*1.Create an API for GET /movies that returns a list of movies. Define an array of 
+movies in your code and return the value in response.*/
 
-router.get('/test-you', function (req, res) {
-    console.log('The exported module is: ',commonFile)
-    commonFile.doSomething()
-    console.log('This is the constant I created', commonFile.name)
-    res.send('Hello there, welcome to this application!')
-});
-
-router.get('/test-underscore', function(req, res){
-    let result = myUnderscore.first([11,12,23,44,15], 4)
-    console.log('the result is',result)
-    res.send('done')
+const movies = ['Rang de basanti', 'The shining', 'Lord of the rings', 'Batman begins'];
+router.get('/movies', function (req, res) {
+    res.send(movies)
+    console.log('hello');
 })
 
-router.get('/cohorts', function (request, response){
-    // logic to get the cohorts from database
-    // logic tp get only the active cohorts
-    // logic to get only the cohort with a size than 50
-    // logic to get only the backend cohorts
-    response.send(['technetium','nobelium'])
+/*2.Create an API GET / movies /: indexNumber(For example GET / movies / 1 is a valid 
+request and it should return the movie in your array at index 1). You can define an 
+array of movies again in your api
+3.Handle a scenario in problem 2 where if the index is greater than the valid maximum 
+value or smaller that the valid minimum value, a message is returned that tells the 
+user to use a valid index in an error message.*/
+
+
+router.get('/movies/:indexnumber', function (req, res) {
+    let index = req.params.indexnumber;
+    console.log(index)
+    if (index < 0 || index >= movies.length) {
+        res.status(400).send('Invalid index number')
+    }
+    else {
+        res.send(movies[index]);
+    }
 })
 
-router.get('/students', function(req, res){
-    // receive or access the query params in the code
-    // write a logic on these query params
-    // city, score
-    console.log(req.query)
-    let requestedCity = req.query.city
-    let sortField = req.query.sort
-    // logic to get students
-    res.send(["Sabiha","Neha","Akash","Sonali"])
+/*4.Write another api called GET / films.Instead of an array of strings define an array 
+of movie objects this time.Each movie object should have attributes - id and name*/
+
+/*5.Write api GET / films /:filmId where filmId is the value received in request path 
+params.Use this value to return a movie object with this id.In case there is no such 
+movie present in the array, return a suitable message in the response body.Example 
+for a request GET / films / 3 should return the movie object
+{
+ “id”: 3,
+ “name”: “Rang de Basanti”
+}
+Similarly for a request GET / films / 9 the response can be something like - 
+‘No movie exists with this id’*/
+
+const moviesobj = [
+    {
+        'id': 1,
+        'name': 'The Shining',
+    },
+    {
+        'id': 2,
+        'name': 'Incendies'
+    },
+    {
+        'id': 3,
+        'name': 'Rang de Basanti'
+    },
+    {
+        'id': 4,
+        'name': 'Finding Nemo'
+    }
+]
+router.get('/flims', function (req, res) {
+    res.send(moviesobj);
+})
+router.get('/flims/:flimid', function (req, res) {
+    let flimindex = parseInt(req.params.flimid);
+    let result = moviesobj.find(x => x.id === flimindex)
+    if (result) {
+        res.status(200).send(result)
+    }
+    else {
+        res.status(404).send("No movie exist with this id")
+    }
+
 })
 
-router.get('/students/:studentName', function(req, res) {
-    console.log(req.params.studentName)
-    /// go to database and search for studentName student
-    // store the data found in this variable - studentDetails
-    //res.send({data: studentDetails})
-    res.send('student data')
-})
+
 
 
 module.exports = router;
